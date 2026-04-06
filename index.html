@@ -1,240 +1,224 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="es">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2685.4">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gym">
+<title>Gym Tracker</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    background: #0f1117; color: #e8e8e8;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100dvh; padding: 2rem 1rem 3rem;
+    max-width: 480px; margin: 0 auto;
+  }
+  .header { display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; }
+  .header-title { font-size: 18px; font-weight: 500; }
+  .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 1.5rem; }
+  .card { background: #1a1d27; border: 0.5px solid #2a2d3a; border-radius: 12px; padding: 12px 10px; }
+  .card-label { font-size: 10px; color: #666; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .card-value { font-size: 22px; font-weight: 600; }
+  .btn-main {
+    display: block; width: 100%; padding: 22px;
+    font-size: 18px; font-weight: 600; cursor: pointer;
+    background: #4ade80; color: #0a1a0f;
+    border: none; border-radius: 14px;
+    margin-bottom: 1.25rem; letter-spacing: 0.01em;
+    transition: opacity 0.15s, transform 0.1s;
+    -webkit-appearance: none;
+  }
+  .btn-main:active { opacity: 0.8; transform: scale(0.97); }
+  .week-box { background: #1a1d27; border: 0.5px solid #2a2d3a; border-radius: 12px; padding: 16px; margin-bottom: 1.25rem; }
+  .week-title { font-size: 12px; color: #888; margin-bottom: 12px; letter-spacing: 0.03em; }
+  .pips { display: flex; gap: 8px; margin-bottom: 12px; }
+  .pip { width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .pip-done { background: #16532d; }
+  .pip-empty { background: #1e2130; border: 0.5px solid #2a2d3a; }
+  .week-status { font-size: 13px; margin-bottom: 10px; }
+  .status-done { color: #4ade80; }
+  .status-partial { color: #fbbf24; }
+  .undo-btn { font-size: 11px; color: #555; background: none; border: none; cursor: pointer; text-decoration: underline; padding: 0; }
+  .section-label { font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+  .dots-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .dot { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+  .dot-done { background: #16532d; color: #4ade80; }
+  .dot-fail { background: #2a1515; color: #f87171; }
+  .legend { display: flex; gap: 16px; margin-bottom: 1.25rem; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #666; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .divider { height: 0.5px; background: #1e2130; margin: 0.75rem 0 1rem; }
+  .history { display: flex; flex-direction: column; max-height: 180px; overflow-y: auto; }
+  .history-item { font-size: 12px; color: #555; padding: 6px 0; border-bottom: 0.5px solid #1e2130; }
+  .history-item:last-child { border-bottom: none; }
+  .toast {
+    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+    background: #4ade80; color: #0a1a0f;
+    padding: 10px 20px; border-radius: 20px;
+    font-size: 14px; font-weight: 600;
+    opacity: 0; transition: opacity 0.2s;
+    pointer-events: none; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; }
+</style>
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="es"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1">&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1">&lt;meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"&gt;</p>
-<p class="p1">&lt;meta name="apple-mobile-web-app-capable" content="yes"&gt;</p>
-<p class="p1">&lt;meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"&gt;</p>
-<p class="p1">&lt;meta name="apple-mobile-web-app-title" content="Gym"&gt;</p>
-<p class="p1">&lt;title&gt;Gym Tracker&lt;/title&gt;</p>
-<p class="p1">&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>body {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>background: #0f1117; color: #e8e8e8;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>min-height: 100dvh; padding: 2rem 1rem 3rem;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>max-width: 480px; margin: 0 auto;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.header { display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.header-title { font-size: 18px; font-weight: 500; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 1.5rem; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.card { background: #1a1d27; border: 0.5px solid #2a2d3a; border-radius: 12px; padding: 12px 10px; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.card-label { font-size: 10px; color: #666; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.05em; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.card-value { font-size: 22px; font-weight: 600; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.btn-main {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>display: block; width: 100%; padding: 22px;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>font-size: 18px; font-weight: 600; cursor: pointer;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>background: #4ade80; color: #0a1a0f;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>border: none; border-radius: 14px;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>margin-bottom: 1.25rem; letter-spacing: 0.01em;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>transition: opacity 0.15s, transform 0.1s;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>-webkit-appearance: none;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.btn-main:active { opacity: 0.8; transform: scale(0.97); }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.week-box { background: #1a1d27; border: 0.5px solid #2a2d3a; border-radius: 12px; padding: 16px; margin-bottom: 1.25rem; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.week-title { font-size: 12px; color: #888; margin-bottom: 12px; letter-spacing: 0.03em; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.pips { display: flex; gap: 8px; margin-bottom: 12px; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.pip { width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.pip-done { background: #16532d; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.pip-empty { background: #1e2130; border: 0.5px solid #2a2d3a; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.week-status { font-size: 13px; margin-bottom: 10px; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.status-done { color: #4ade80; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.status-partial { color: #fbbf24; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.undo-btn { font-size: 11px; color: #555; background: none; border: none; cursor: pointer; text-decoration: underline; padding: 0; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.section-label { font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.dots-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.dot { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.dot-done { background: #16532d; color: #4ade80; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.dot-fail { background: #2a1515; color: #f87171; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.legend { display: flex; gap: 16px; margin-bottom: 1.25rem; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #666; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.legend-dot { width: 10px; height: 10px; border-radius: 50%; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.divider { height: 0.5px; background: #1e2130; margin: 0.75rem 0 1rem; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.history { display: flex; flex-direction: column; max-height: 180px; overflow-y: auto; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.history-item { font-size: 12px; color: #555; padding: 6px 0; border-bottom: 0.5px solid #1e2130; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.history-item:last-child { border-bottom: none; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.toast {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>background: #4ade80; color: #0a1a0f;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>padding: 10px 20px; border-radius: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>font-size: 14px; font-weight: 600;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>opacity: 0; transition: opacity 0.2s;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>pointer-events: none; white-space: nowrap;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.toast.show { opacity: 1; }</p>
-<p class="p1">&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;div class="header"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;span style="font-size:22px"&gt;🏋️&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;span class="header-title"&gt;Gym Tracker&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;span style="margin-left:auto;font-size:14px"&gt;💪 🔥 ⚡&lt;/span&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;div class="metrics"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="card-label"&gt;Semanas&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="card-value" id="m-weeks" style="color:#e8e8e8"&gt;—&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="card-label"&gt;Cumplidas&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="card-value" id="m-ok" style="color:#4ade80"&gt;—&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="card"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="card-label"&gt;Promedio&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="card-value" id="m-pct"&gt;—&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;button class="btn-main" onclick="addSession()"&gt;🏋️ Fui al gym hoy&lt;/button&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;div class="week-box"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="week-title" id="week-title"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="pips" id="pips"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="week-status" id="week-status"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;button class="undo-btn" onclick="undoLast()"&gt;↩ deshacer última&lt;/button&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;div class="section-label"&gt;Semanas anteriores&lt;/div&gt;</p>
-<p class="p1">&lt;div class="dots-wrap" id="dots"&gt;&lt;/div&gt;</p>
-<p class="p1">&lt;div class="legend"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="legend-item"&gt;&lt;div class="legend-dot" style="background:#4ade80"&gt;&lt;/div&gt;Cumplida&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="legend-item"&gt;&lt;div class="legend-dot" style="background:#f87171"&gt;&lt;/div&gt;No cumplida&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;div class="divider"&gt;&lt;/div&gt;</p>
-<p class="p1">&lt;div class="section-label"&gt;Historial&lt;/div&gt;</p>
-<p class="p1">&lt;div class="history" id="history"&gt;&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;div class="toast" id="toast"&gt;&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;script&gt;</p>
-<p class="p1">const GOAL = 3, TARGET = 80, KEY = 'gym_standalone_v1';</p>
-<p class="p2"><br></p>
-<p class="p1">const PRE = [</p>
-<p class="p1"><span class="Apple-converted-space">  </span>'2025-12-30','2026-01-02','2026-01-03',</p>
-<p class="p1"><span class="Apple-converted-space">  </span>'2026-01-07','2026-01-09','2026-01-10',</p>
-<p class="p1"><span class="Apple-converted-space">  </span>'2026-01-14','2026-01-15','2026-01-17',</p>
-<p class="p1"><span class="Apple-converted-space">  </span>'2026-01-21','2026-01-22','2026-01-24',</p>
-<p class="p1"><span class="Apple-converted-space">  </span>'2026-01-28','2026-01-29','2026-01-31',</p>
-<p class="p1"><span class="Apple-converted-space">  </span>'2026-02-04','2026-02-05','2026-02-07',</p>
-<p class="p1"><span class="Apple-converted-space">  </span>'2026-02-11','2026-02-12','2026-02-14',</p>
-<p class="p1"><span class="Apple-converted-space">  </span>'2026-02-18','2026-02-21',</p>
-<p class="p1"><span class="Apple-converted-space">  </span>'2026-02-25','2026-02-26','2026-02-28',</p>
-<p class="p1"><span class="Apple-converted-space">  </span>'2026-03-04','2026-03-05','2026-03-07',</p>
-<p class="p1"><span class="Apple-converted-space">  </span>'2026-03-11','2026-03-14',</p>
-<p class="p1"><span class="Apple-converted-space">  </span>'2026-03-18','2026-03-19','2026-03-21',</p>
-<p class="p1"><span class="Apple-converted-space">  </span>'2026-03-25','2026-03-29',</p>
-<p class="p1"><span class="Apple-converted-space">  </span>'2026-04-01','2026-04-02','2026-04-04',</p>
-<p class="p1">];</p>
-<p class="p2"><br></p>
-<p class="p1">function wk(d) {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const dt = new Date(d + 'T12:00:00'), day = dt.getDay();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const mon = new Date(dt);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>mon.setDate(dt.getDate() - (day === 0 ? 6 : day - 1));</p>
-<p class="p1"><span class="Apple-converted-space">  </span>return mon.toISOString().slice(0,10);</p>
-<p class="p1">}</p>
-<p class="p1">function mon(w) { return new Date(w + 'T12:00:00'); }</p>
-<p class="p1">function sun(w) { const m = mon(w), s = new Date(m); s.setDate(m.getDate()+6); return s; }</p>
-<p class="p1">function fmt(d) { return d.toLocaleDateString('es-AR',{day:'numeric',month:'short'}); }</p>
-<p class="p1">function today() {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const n = new Date();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;</p>
-<p class="p1">}</p>
-<p class="p1">function load() { try { const r = localStorage.getItem(KEY); if(r) return JSON.parse(r); } catch{} return null; }</p>
-<p class="p1">function save(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch{} }</p>
-<p class="p2"><br></p>
-<p class="p1">let sessions = load() ?? PRE;</p>
-<p class="p1">save(sessions);</p>
-<p class="p2"><br></p>
-<p class="p1">function showToast(msg) {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const t = document.getElementById('toast');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>t.textContent = msg; t.classList.add('show');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>setTimeout(() =&gt; t.classList.remove('show'), 1800);</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function render() {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const td = today(), cw = wk(td);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const allW = [...new Set(sessions.map(s =&gt; wk(s)))].sort();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const past = allW.filter(w =&gt; w &lt; cw);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const passed = past.length;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const completed = past.filter(w =&gt; sessions.filter(s =&gt; wk(s) === w).length &gt;= GOAL).length;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const pct = passed === 0 ? null : Math.round(completed / passed * 100);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('m-weeks').textContent = passed;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('m-ok').textContent = completed;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const pEl = document.getElementById('m-pct');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if (pct === null) { pEl.textContent = '—'; pEl.style.color = '#888'; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>else { pEl.textContent = pct + '%'; pEl.style.color = pct &gt;= TARGET ? '#4ade80' : pct &gt;= 60 ? '#fbbf24' : '#f87171'; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>const cur = sessions.filter(s =&gt; wk(s) === cw), cnt = cur.length;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('week-title').textContent = 'Semana actual · ' + fmt(mon(cw)) + ' – ' + fmt(sun(cw));</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>const pips = document.getElementById('pips');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>pips.innerHTML = '';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>for (let i = 0; i &lt; Math.max(GOAL, cnt); i++) {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const p = document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>p.className = 'pip ' + (i &lt; cnt ? 'pip-done' : 'pip-empty');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>p.textContent = i &lt; cnt ? '✓' : '';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>pips.appendChild(p);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>const st = document.getElementById('week-status');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if (cnt &gt;= GOAL) { st.textContent = '¡Semana cumplida! ' + cnt + '/' + GOAL; st.className = 'week-status status-done'; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>else { const r = GOAL - cnt; st.textContent = 'Faltan ' + r + ' ida' + (r &gt; 1 ? 's' : '') + ' para cumplir'; st.className = 'week-status status-partial'; }</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>const dots = document.getElementById('dots');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>dots.innerHTML = '';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>past.slice(-32).forEach(w =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const c = sessions.filter(s =&gt; wk(s) === w).length;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const d = document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>d.className = 'dot ' + (c &gt;= GOAL ? 'dot-done' : 'dot-fail');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>d.title = fmt(mon(w)) + ': ' + c;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>d.textContent = c;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>dots.appendChild(d);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>const hist = document.getElementById('history');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>hist.innerHTML = '';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>[...sessions].sort((a,b) =&gt; b.localeCompare(a)).slice(0,40).forEach(s =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const d = new Date(s + 'T12:00:00'), el = document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>el.className = 'history-item';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>el.textContent = d.toLocaleDateString('es-AR',{weekday:'short',day:'numeric',month:'short',year:'numeric'});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>hist.appendChild(el);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>});</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function addSession() {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>sessions.push(today());</p>
-<p class="p1"><span class="Apple-converted-space">  </span>save(sessions);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>render();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>showToast('💪 ¡Registrado!');</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function undoLast() {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if (!sessions.length) return;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>sessions.pop(); save(sessions); render();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>showToast('↩ Deshecho');</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">render();</p>
-<p class="p1">&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+
+<div class="header">
+  <span style="font-size:22px">🏋️</span>
+  <span class="header-title">Gym Tracker</span>
+  <span style="margin-left:auto;font-size:14px">💪 🔥 ⚡</span>
+</div>
+
+<div class="metrics">
+  <div class="card">
+    <div class="card-label">Semanas</div>
+    <div class="card-value" id="m-weeks" style="color:#e8e8e8">—</div>
+  </div>
+  <div class="card">
+    <div class="card-label">Cumplidas</div>
+    <div class="card-value" id="m-ok" style="color:#4ade80">—</div>
+  </div>
+  <div class="card">
+    <div class="card-label">Promedio</div>
+    <div class="card-value" id="m-pct">—</div>
+  </div>
+</div>
+
+<button class="btn-main" onclick="addSession()">🏋️ Fui al gym hoy</button>
+
+<div class="week-box">
+  <div class="week-title" id="week-title"></div>
+  <div class="pips" id="pips"></div>
+  <div class="week-status" id="week-status"></div>
+  <button class="undo-btn" onclick="undoLast()">↩ deshacer última</button>
+</div>
+
+<div class="section-label">Semanas anteriores</div>
+<div class="dots-wrap" id="dots"></div>
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#4ade80"></div>Cumplida</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#f87171"></div>No cumplida</div>
+</div>
+
+<div class="divider"></div>
+<div class="section-label">Historial</div>
+<div class="history" id="history"></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const GOAL = 3, TARGET = 80, KEY = 'gym_standalone_v1';
+
+const PRE = [
+  '2025-12-30','2026-01-02','2026-01-03',
+  '2026-01-07','2026-01-09','2026-01-10',
+  '2026-01-14','2026-01-15','2026-01-17',
+  '2026-01-21','2026-01-22','2026-01-24',
+  '2026-01-28','2026-01-29','2026-01-31',
+  '2026-02-04','2026-02-05','2026-02-07',
+  '2026-02-11','2026-02-12','2026-02-14',
+  '2026-02-18','2026-02-21',
+  '2026-02-25','2026-02-26','2026-02-28',
+  '2026-03-04','2026-03-05','2026-03-07',
+  '2026-03-11','2026-03-14',
+  '2026-03-18','2026-03-19','2026-03-21',
+  '2026-03-25','2026-03-29',
+  '2026-04-01','2026-04-02','2026-04-04',
+];
+
+function wk(d) {
+  const dt = new Date(d + 'T12:00:00'), day = dt.getDay();
+  const mon = new Date(dt);
+  mon.setDate(dt.getDate() - (day === 0 ? 6 : day - 1));
+  return mon.toISOString().slice(0,10);
+}
+function mon(w) { return new Date(w + 'T12:00:00'); }
+function sun(w) { const m = mon(w), s = new Date(m); s.setDate(m.getDate()+6); return s; }
+function fmt(d) { return d.toLocaleDateString('es-AR',{day:'numeric',month:'short'}); }
+function today() {
+  const n = new Date();
+  return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
+}
+function load() { try { const r = localStorage.getItem(KEY); if(r) return JSON.parse(r); } catch{} return null; }
+function save(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch{} }
+
+let sessions = load() ?? PRE;
+save(sessions);
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+function render() {
+  const td = today(), cw = wk(td);
+  const allW = [...new Set(sessions.map(s => wk(s)))].sort();
+  const past = allW.filter(w => w < cw);
+  const passed = past.length;
+  const completed = past.filter(w => sessions.filter(s => wk(s) === w).length >= GOAL).length;
+  const pct = passed === 0 ? null : Math.round(completed / passed * 100);
+
+  document.getElementById('m-weeks').textContent = passed;
+  document.getElementById('m-ok').textContent = completed;
+  const pEl = document.getElementById('m-pct');
+  if (pct === null) { pEl.textContent = '—'; pEl.style.color = '#888'; }
+  else { pEl.textContent = pct + '%'; pEl.style.color = pct >= TARGET ? '#4ade80' : pct >= 60 ? '#fbbf24' : '#f87171'; }
+
+  const cur = sessions.filter(s => wk(s) === cw), cnt = cur.length;
+  document.getElementById('week-title').textContent = 'Semana actual · ' + fmt(mon(cw)) + ' – ' + fmt(sun(cw));
+
+  const pips = document.getElementById('pips');
+  pips.innerHTML = '';
+  for (let i = 0; i < Math.max(GOAL, cnt); i++) {
+    const p = document.createElement('div');
+    p.className = 'pip ' + (i < cnt ? 'pip-done' : 'pip-empty');
+    p.textContent = i < cnt ? '✓' : '';
+    pips.appendChild(p);
+  }
+
+  const st = document.getElementById('week-status');
+  if (cnt >= GOAL) { st.textContent = '¡Semana cumplida! ' + cnt + '/' + GOAL; st.className = 'week-status status-done'; }
+  else { const r = GOAL - cnt; st.textContent = 'Faltan ' + r + ' ida' + (r > 1 ? 's' : '') + ' para cumplir'; st.className = 'week-status status-partial'; }
+
+  const dots = document.getElementById('dots');
+  dots.innerHTML = '';
+  past.slice(-32).forEach(w => {
+    const c = sessions.filter(s => wk(s) === w).length;
+    const d = document.createElement('div');
+    d.className = 'dot ' + (c >= GOAL ? 'dot-done' : 'dot-fail');
+    d.title = fmt(mon(w)) + ': ' + c;
+    d.textContent = c;
+    dots.appendChild(d);
+  });
+
+  const hist = document.getElementById('history');
+  hist.innerHTML = '';
+  [...sessions].sort((a,b) => b.localeCompare(a)).slice(0,40).forEach(s => {
+    const d = new Date(s + 'T12:00:00'), el = document.createElement('div');
+    el.className = 'history-item';
+    el.textContent = d.toLocaleDateString('es-AR',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+    hist.appendChild(el);
+  });
+}
+
+function addSession() {
+  sessions.push(today());
+  save(sessions);
+  render();
+  showToast('💪 ¡Registrado!');
+}
+
+function undoLast() {
+  if (!sessions.length) return;
+  sessions.pop(); save(sessions); render();
+  showToast('↩ Deshecho');
+}
+
+render();
+</script>
 </body>
 </html>
